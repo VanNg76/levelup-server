@@ -1,0 +1,26 @@
+[
+    {
+        "model": "levelupapi.game",
+        "pk": 1,
+        "fields": {
+            "game_type_id": 3,
+            "title": "Clash of Clans",
+            "maker": "CoC",
+            "gamer_id": 1,
+            "number_of_player": 4,
+            "skill_level": 10
+        }
+    },
+    {
+        "model": "levelupapi.game",
+        "pk": 2,
+        "fields": {
+            "game_type_id": 1,
+            "title": "Caro",
+            "maker": "Caro Inc.",
+            "gamer_id": 1,
+            "number_of_player": 2,
+            "skill_level": 20
+        }
+    }
+]
