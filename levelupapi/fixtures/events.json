@@ -1,0 +1,13 @@
+[
+    {
+        "model": "levelupapi.event",
+        "pk": 1,
+        "fields": {
+            "description": "Offline event CoC",
+            "date": "2022-12-01",
+            "time": "13:00",
+            "organizer_id": 1,
+            "game_id": 1
+        }
+    }
+]
