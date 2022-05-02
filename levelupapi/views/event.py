@@ -48,13 +48,41 @@ class EventView(ViewSet):
         """
         organizer = Gamer.objects.get(user=request.auth.user)
         game = Game.objects.get(pk=request.data['game'])
-        
+
         serializer = CreateEventSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        
+
         serializer.save(organizer=organizer, game=game)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    # def update(self, request, pk):
+    #     """Handle PUT requests for a event
+    #     Without validation (is working!!)
+    #     """
+
+    #     event = Event.objects.get(pk=pk)
+    #     event.description = request.data["description"]
+    #     event.date = request.data["date"]
+    #     event.time = request.data["time"]
+
+    #     game = Game.objects.get(pk=request.data["game"])
+    #     event.game = game
+    #     event.save()
+
+    #     return Response(None, status=status.HTTP_204_NO_CONTENT)
+
+    def update(self, request, pk):
+        """Handle PUT requests for a event
+        with validation
+        """
+        event = Event.objects.get(pk=pk)
+        game = Game.objects.get(pk=request.data['game'])
+        # The original event object is passed to the serializer, along with the request.data
+        # This will make any updates on the event object
+        serializer = CreateEventSerializer(event, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(game=game)
+        return Response(None, status=status.HTTP_204_NO_CONTENT)
 
 class EventSerializer(serializers.ModelSerializer):
     """JSON serializer for events

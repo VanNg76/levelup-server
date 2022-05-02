@@ -63,6 +63,36 @@ class GameView(ViewSet):
         serializer.save(gamer=gamer, game_type=game_type)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    # def update(self, request, pk):
+    #     """(is working!! update function without validation)"""
+    #     Handle PUT requests for a game
+
+    #     game = Game.objects.get(pk=pk)
+    #     game.title = request.data["title"]
+    #     game.maker = request.data["maker"]
+    #     game.number_of_player = request.data["number_of_player"]
+    #     game.skill_level = request.data["skill_level"]
+
+    #     game_type = GameType.objects.get(pk=request.data["game_type"])
+    #     game.game_type = game_type
+    #     game.save()
+
+    #     return Response(None, status=status.HTTP_204_NO_CONTENT)
+
+    def update(self, request, pk):
+        """Handle PUT requests for a game
+        update function with validation
+        """
+        game = Game.objects.get(pk=pk)
+        game_type = GameType.objects.get(pk=request.data['game_type'])
+        gamer = Gamer.objects.get(user=request.auth.user)
+        # The original game object is passed to the serializer, along with the request.data
+        # This will make any updates on the game object
+        serializer = CreateGameSerializer(game, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(game_type=game_type, gamer=gamer)
+        return Response(None, status=status.HTTP_204_NO_CONTENT)
+
 
 class GameSerializer(serializers.ModelSerializer):
     """JSON serializer for games
