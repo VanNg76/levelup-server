@@ -4,13 +4,14 @@ from .gamer import Gamer
 
 
 class Event(models.Model):
-
-    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    # add related_name='events' to attached a 'events' prop into game
+    # now we can use 'Count' events on GameView 
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="events")
     description = models.CharField(max_length=20)
-    date = models.DateField()
+    date = models.DateField(auto_now=False, auto_now_add=False)
     time = models.TimeField()
     organizer = models.ForeignKey(Gamer, on_delete=models.CASCADE)
-    attendees = models.ManyToManyField(Gamer, related_name="gamer")
+    attendees = models.ManyToManyField(Gamer, related_name="gamers")
 
     # create a custom property named 'joined' for Event class
     @property
@@ -21,6 +22,8 @@ class Event(models.Model):
     def joined(self, value):
         self.__joined = value
 
+    # create another custom property to return to client to
+    # check if current logged in user is organizer of an event
     @property
     def is_organizer(self):
         return self.__is_organizer
