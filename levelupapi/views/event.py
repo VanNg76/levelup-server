@@ -11,6 +11,8 @@ from levelupapi.models import Gamer
 # use in create to validate receiving errors
 from django.core.exceptions import ValidationError
 
+from django.db.models import Count
+
 
 class EventView(ViewSet):
     """Level up event view"""
@@ -32,7 +34,10 @@ class EventView(ViewSet):
         Returns:
             Response -- JSON serialized list of events
         """
-        events = Event.objects.all()
+        # events = Event.objects.all()  # replace this line by next line to add attendees_count
+        events = Event.objects.annotate(attendees_count=Count('attendees')) # add a virtual property named attendees_count
+                                                                            # to the event object
+
         game = request.query_params.get('game', None)
         gamer = Gamer.objects.get(user=request.auth.user)
 
@@ -122,12 +127,13 @@ class EventView(ViewSet):
 class EventSerializer(serializers.ModelSerializer):
     """JSON serializer for events
     """
+    attendees_count = serializers.IntegerField(default=None)
     class Meta:
         model = Event
         # Using depth to embed tables: fields need to revise to
         # 'organizer' instead of 'organizer_id'
         fields = ('id', 'game', 'organizer',
-          'description', 'date', 'time', 'attendees', 'joined', 'is_organizer')
+          'description', 'date', 'time', 'attendees', 'joined', 'is_organizer','attendees_count')
         depth = 2
 
 class CreateEventSerializer(serializers.ModelSerializer):

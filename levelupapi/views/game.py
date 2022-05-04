@@ -11,6 +11,8 @@ from levelupapi.models import Game
 from levelupapi.models import GameType
 from levelupapi.models import Gamer
 
+from django.db.models import Count
+
 class GameView(ViewSet):
     """Levelup game view"""
 
@@ -31,7 +33,10 @@ class GameView(ViewSet):
         Returns:
             Response -- JSON serialized list of game
         """
-        games = Game.objects.all()
+        # games = Game.objects.all()    # replace this line by next line to add event_count
+        games = Game.objects.annotate(event_count=Count('events'))  # add a virtual property named event_count
+                                                                    # to game object
+
         game_type = request.query_params.get('type', None)
         if game_type is not None:
             games = games.filter(game_type_id=game_type)
@@ -102,11 +107,12 @@ class GameView(ViewSet):
 class GameSerializer(serializers.ModelSerializer):
     """JSON serializer for games
     """
+    event_count = serializers.IntegerField(default=None)
     class Meta:
         model = Game
         # Using depth to embed tables: fields need to revise to
         # 'game_type''gamer' instead of 'game_type_id''gamer_id'
-        fields = ('id', 'title', 'maker', 'number_of_player', 'skill_level', 'game_type', 'gamer')
+        fields = ('id', 'title', 'maker', 'number_of_player', 'skill_level', 'game_type', 'gamer', 'event_count')
         depth = 1
 
 class CreateGameSerializer(serializers.ModelSerializer):
